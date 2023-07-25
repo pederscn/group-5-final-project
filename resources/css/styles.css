@@ -1,0 +1,5 @@
+body {
+  text-align: center;
+  background: rgb(2, 0, 42);
+  background: radial-gradient(circle, rgba(2, 0, 42, 1) 0%, rgba(71, 9, 121, 1) 74%, rgba(217, 121, 11, 1) 100%);
+}
