@@ -4,6 +4,7 @@ class mainScene {
     this.load.image(`player`, `assets/images/bigmanallen.png`);
     this.load.image(`ball`, `assets/images/ball.png`);
     this.load.image(`goldball`, `assets/images/goldball.png`);
+    this.load.image(`invisible wall`, `assets/images/invisible wall.png`);
   }
   create() {
     this.background = this.add.image(0, 0, `background`);
@@ -12,7 +13,25 @@ class mainScene {
     this.player = this.physics.add.sprite(100, 100, `player`);
     this.player.setCollideWorldBounds(true);
 
+    //invisible wall physics
+    this.walls = this.physics.add.group();
+
+    this.invisibleWall = this.physics.add.sprite(106, 449, `invisible wall`);
+    this.walls.add(this.invisibleWall);
+    this.invisibleWall2 = this.physics.add.sprite(694, 449, `invisible wall`);
+    this.walls.add(this.invisibleWall2);
+
+    //setting walls as immovable
+    this.walls.getChildren().forEach(wall => {
+      wall.setImmovable(true);
+    });
+
+
     this.balls = this.physics.add.group();
+
+    //invisible wall collisions
+    this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.balls, this.walls);
 
     for (let i = 0; i < 3; i++) {
       let ball = this.balls.create(0, 0, `ball`);
