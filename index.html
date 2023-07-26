@@ -1,29 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Bouncer Simulator v1.0</title>
-        <!-- Bootstrap + JQuery + FontAwesome -->
-        <link rel="stylesheet" href="resources/vendor/bootstrap.min.css" />
-        <script type="text/javascript" src="phaser.min.js"></script>
-        <script type="text/javascript" src="game.js"></script>
-        <script src="resources/vendor/jquery-3.5.1.slim.min.js"></script>
-        <script src="resources/vendor/popper.min.js"></script>
-        <script src="resources/vendor/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="resources/vendor/fontawesome.min.css" />
-        <link rel="stylesheet" href="resources/css/styles.css" />
-    </head>
 
-    <body>
-        <!-- WORK FROM INSIDE THIS CONTAINER-->
-            <img alt="The coolest logo for a game ever made. It says Bouncer Simulator and it's on fire holy moly" width="800" src="assets/images/logo.gif">
-            <div id="game"></div>
-            <!-- 
-                <img alt="bounce adults into the bar!" src="assets/images/bounce adults.png"><br>
-            -->
-            <img alt="No babies allowed" width="800" src="assets/images/no babies.png">
-        <!-- Our own Scripts -->
-        <script src="resources/js/index.js"></script>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bouncer Simulator v1.0</title>
+  <!-- Bootstrap + JQuery + FontAwesome -->
+  <link rel="stylesheet" href="resources/vendor/bootstrap.min.css" />
+  <link rel="stylesheet" href="resources/vendor/fontawesome.min.css" />
+  <link rel="stylesheet" href="resources/css/styles.css" />
+  <style>
+    body {
+      margin: 0;
+      background-image: url('assets/images/BouncerSimTitleBackground.png'); /* Replace 'BouncerSimTitleBackground.png' with your background image URL */
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: whitesmoke; /* Set text color to white */
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); /* Add a text shadow */
+    }
+
+    #titleScreen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #startButton {
+    width: 260px;
+    height: 80px;
+    background-image: url('assets/images/button_start-game.png'); /* Replace 'button_start-game.png' with your start button image URL */
+    background-size: cover;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 40px; /* Half of the button's height to create an oval shape */
+    }   
+
+
+    #gameContainer {
+      display: none;
+    }
+
+    /* Add any additional CSS styles here */
+  </style>
+</head>
+
+<body>
+  <div id="titleScreen">
+    <!-- The title screen content goes here -->
+
+    <div id="instructions">
+      <h2 style="margin-top: 90px">Instructions:</h2>
+      <p>Use arrow keys to move.</p>
+      <p>Allow all of the adults into the bar, bounce all of the babies out!</p>
+    </div>
+    <button id="startButton"></button>
+    <img alt="No babies allowed" width="800" src="assets/images/no babies.png">
+  </div>
+
+  <div id="gameContainer">
+    <!-- The game container that will be shown after the user clicks "Start Game" -->
+    <div id="game"></div>
+  </div>
+
+  <!-- Scripts -->
+<!-- Scripts -->
+<script type="text/javascript" src="phaser.min.js"></script>
+<script type="text/javascript" src="Scene1.js"></script>
+<script type="text/javascript" src="game.js"></script>
+<script src="resources/vendor/jquery-3.5.1.slim.min.js"></script>
+<script src="resources/vendor/popper.min.js"></script>
+<script src="resources/vendor/bootstrap.min.js"></script>
+<script src="resources/js/index.js"></script>
+<script>
+  document.getElementById("startButton").addEventListener("click", function () {
+    // Hide the title screen and show the game container when the button is clicked
+    document.getElementById("titleScreen").style.display = "none";
+    document.getElementById("gameContainer").style.display = "block";
+  });
+</script>
+</body>
+
 </html>
