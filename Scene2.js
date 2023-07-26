@@ -1,10 +1,6 @@
-class mainScene {
-  preload() {
-    this.load.image(`background`, `assets/images/background.png`);
-    this.load.image(`player`, `assets/images/bigmanallen.png`);
-    this.load.image(`ball`, `assets/images/ball.png`);
-    this.load.image(`goldball`, `assets/images/goldball.png`);
-    this.load.image(`invisible wall`, `assets/images/invisible wall.png`);
+class Scene2 extends Phaser.Scene {
+  constructor() {
+    super(`playGame`);
   }
   create() {
     this.background = this.add.image(0, 0, `background`);
@@ -117,14 +113,3 @@ class mainScene {
     finalScoreText.setOrigin(0.5);
   }
 }
-
-let config = {
-  width: 800, // Width of the game in pixels
-  height: 500, // Height of the game in pixels
-  backgroundColor: `#3498db`, // The background color (blue)
-  scene: mainScene, // The name of the scene we created
-  physics: { default: `arcade` }, // The physics engine to use
-  parent: `game`, // Create the game inside the <div id="game"> 
-};
-
-let game = new Phaser.Game(config);
