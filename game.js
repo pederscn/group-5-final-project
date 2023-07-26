@@ -29,16 +29,17 @@ class mainScene {
 
     this.balls = this.physics.add.group();
 
-    //invisible wall collisions
-    this.physics.add.collider(this.player, this.walls);
-    this.physics.add.collider(this.balls, this.walls);
-
     for (let i = 0; i < 3; i++) {
       let ball = this.balls.create(0, 0, `ball`);
       ball.setCollideWorldBounds(true);
       ball.setBounce(1);
       ball.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
     }
+
+    //invisible wall collisions
+    this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.balls, this.walls);
+    this.physics.add.collider(this.player, this.balls);
 
     this.score = 0;
     let style = { font: `20px Arial`, fill: `#fff` };
@@ -58,19 +59,32 @@ class mainScene {
   update() {
     let _this = this;
 
-    this.balls.children.iterate(function (ball) {
-      _this.physics.world.wrap(ball, 16);
 
-      if (_this.physics.overlap(_this.player, ball)) {
-        if (ball.texture.key === `goldball`) {
-          _this.collectGoldBall(ball);
-        } else {
-          if (Phaser.Math.RND.frac() <= 0.1) {
-            _this.spawnGoldBall();
+    this.physics.world.wrap(this.balls, 16);
+
+    this.balls.children.iterate((ball) => {
+      // Uncomment the following line to enable collision detection between player and balls
+      this.physics.add.collider(this.player, ball, this.hit, null, this);
+      /*
+      this.balls.children.iterate(function (ball) {
+        _this.physics.world.wrap(ball, 16);
+  
+        if (_this.physics.overlap(_this.player, ball)) {
+          if (ball.texture.key === `goldball`) {
+            _this.collectGoldBall(ball);
+          } else {
+            
+            if (Phaser.Math.RND.frac() <= 0.1) {
+              _this.spawnGoldBall();
+            }
+            
+            _this.hit(_this.player, ball);
           }
-          _this.hit(_this.player, ball);
         }
-      }
+        
+        
+      });
+      */
     });
 
     if (this.arrow.right.isDown) {
@@ -84,6 +98,8 @@ class mainScene {
     } else if (this.arrow.up.isDown) {
       this.player.y -= 5;
     }
+
+    this.player.setVelocity(0, 0);
   }
 
   updateTimer() {
@@ -98,6 +114,7 @@ class mainScene {
     }
   }
 
+  /*
   spawnGoldBall() {
     let newX = Phaser.Math.Between(20, 680);
     let newY = Phaser.Math.Between(20, 380);
@@ -130,8 +147,10 @@ class mainScene {
       newBall.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
     }
   }
+  */
 
   hit(player, ball) {
+    /*
     ball.disableBody(true, true);
 
     this.score += 10;
@@ -151,6 +170,13 @@ class mainScene {
     newBall.setCollideWorldBounds(true);
     newBall.setBounce(1);
     newBall.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+    */
+    const angle = Phaser.Math.Angle.Between(player.x, player.y, ball.x, ball.y);
+
+    // Set the ball's velocity away from the player at a higher speed
+    const velocityMagnitude = 500;
+    ball.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
+
   }
 
   gameOver() {
