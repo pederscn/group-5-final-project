@@ -44,14 +44,38 @@
       display: none;
     }
 
-    /* Add any additional CSS styles here */
+     /* Style for the username container */
+  .username-container {
+    text-align: center; /* Center the label and input field */
+    margin-bottom: 20px; /* Add some spacing at the bottom of the container */
+    font-size: 40px;
+  }
+
+  /* Style for the username label */
+  .username-container label {
+    font-size: 40px; /* Increased font size */
+    font-weight: bold; /* Apply bold style */
+    color: #333;  /* Dark grey color */
+    text-transform: uppercase;
+  }
+
+  /* Style for the username input field */
+  .username-container input[type="text"] {
+    width: 240px;
+    padding: 8px;
+    border: 1px solid #ccc; /* Add a border to the input field */
+    border-radius: 5px;
+  }
   </style>
 </head>
 
 <body>
   <div id="titleScreen">
     <!-- The title screen content goes here -->
-
+    <div class="username-container>
+      <label for="username">Enter your name:</label>
+      <input type="text" id="username" />
+    </div>
     <div id="instructions">
       <h2 style="margin-top: 90px">Instructions:</h2>
       <p>Use arrow keys to move.</p>
@@ -77,9 +101,20 @@
 <script src="resources/js/index.js"></script>
 <script>
   document.getElementById("startButton").addEventListener("click", function () {
-    // Hide the title screen and show the game container when the button is clicked
-    document.getElementById("titleScreen").style.display = "none";
-    document.getElementById("gameContainer").style.display = "block";
+    const username = document.getElementById("username").value;
+    if (username.trim() === "") {
+      alert("Please enter your name before starting the game.");
+    } else {
+      // Hide the title screen and show the game container when the button is clicked
+      document.getElementById("titleScreen").style.display = "none";
+      document.getElementById("gameContainer").style.display = "block";
+
+      // Display the welcome header in the game container
+      const welcomeHeader = document.createElement("h1");
+      welcomeHeader.innerText = `Hello ${username}, welcome!`;
+      document.getElementById("gameContainer").prepend(welcomeHeader);
+    }
+  
   });
 </script>
 </body>
