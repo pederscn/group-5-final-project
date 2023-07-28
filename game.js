@@ -4,7 +4,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('player', 'assets/images/bigmanallen.png');
     this.load.image('ball', 'assets/images/ball.png');
     this.load.image('goldball', 'assets/images/goldball.png');
-    this.load.image('invisible wall', 'assets/images/invisible wall.png');
+    this.load.image('invisiblewall', 'assets/images/invisible-wall.png');
   }
 
   create() {
@@ -14,30 +14,50 @@ class MainScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(400, 350, 'player');
     this.player.setCollideWorldBounds(true);
 
-    // Invisible wall physics
-    this.walls = this.physics.add.group();
-    this.invisibleWall = this.physics.add.sprite(106, 449, 'invisible wall');
-    this.walls.add(this.invisibleWall);
-    this.invisibleWall2 = this.physics.add.sprite(694, 449, 'invisible wall');
-    this.walls.add(this.invisibleWall2);
+    // Add the invisible wall at the center bottom
+    this.invisibleWall = this.physics.add.sprite(
+      this.sys.game.config.width / 2,
+      this.sys.game.config.height - 25,
+      'invisiblewall'
+    );
+    this.invisibleWall.setImmovable(true);
+    this.invisibleWall.displayWidth += 150; // Extend the width by 10 units
 
-    // Setting walls as immovable
-    this.walls.getChildren().forEach((wall) => {
-      wall.setImmovable(true);
+    /*
+    // Highlight Wall
+    const graphics = this.add.graphics();
+    const highlightColor = 0x0000ff; // Blue color
+    const highlightAlpha = 0.5; // Transparency (0 to 1)
+    graphics.lineStyle(5, highlightColor, highlightAlpha);
+    graphics.strokeRect(
+      this.invisibleWall.x - this.invisibleWall.displayWidth / 2,
+      this.invisibleWall.y - this.invisibleWall.height / 2,
+      this.invisibleWall.displayWidth,
+      this.invisibleWall.height
+    );
+    */
+
+    // creating balls
+    this.balls = this.physics.add.group({
+      key: 'ball',
+      repeat: 2, // Number of balls to create (total = repeat + 1)
+      setXY: { x: 100, y: 100, stepX: 200 } // Set the position and horizontal spacing
     });
 
-    this.balls = this.physics.add.group();
-    for (let i = 0; i < 3; i++) {
-      let ball = this.balls.create(0, 0, 'ball');
+    this.balls.children.iterate((ball) => {
       ball.setCollideWorldBounds(true);
       ball.setBounce(1);
       ball.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
-    }
 
-    // Invisible wall collisions
-    this.physics.add.collider(this.player, this.walls);
-    this.physics.add.collider(this.balls, this.walls);
-    this.physics.add.collider(this.player, this.balls);
+      // Set collider on each ball individually
+      this.physics.add.collider(ball, this.invisibleWall, this.destroyBall, null, this);
+    });
+
+    // Invisible wall collision
+    this.physics.add.collider(this.balls, this.invisibleWall, this.destroyBall, null, this);
+
+    // Player and wall collision
+    this.physics.add.collider(this.player, this.invisibleWall);
 
     this.score = 0;
     let style = { font: '20px Arial', fill: '#fff' };
@@ -57,6 +77,12 @@ class MainScene extends Phaser.Scene {
     // Create buttons for pausing and ending the game
     this.createButtons();
   }
+
+
+
+  // create ---------------------------------
+
+
 
   createButtons() {
     // Button styles
@@ -122,6 +148,9 @@ class MainScene extends Phaser.Scene {
     this.resumeButton.visible = false;
   }
 
+
+  // update -----------------------
+
   update() {
     this.physics.world.wrap(this.balls, 16);
 
@@ -130,20 +159,29 @@ class MainScene extends Phaser.Scene {
       this.physics.world.wrap(ball, 16, false, true, false, false);
     });
 
+    // Check for hitting the walls (including the invisible wall)
+    this.physics.world.collide(this.balls, this.invisibleWall); // Remove the third argument (callback) since we don't need it here
+
     if (this.arrow.right.isDown) {
-      this.player.x += 5;
+      this.player.setVelocityX(300); // Adjust the player's horizontal velocity
     } else if (this.arrow.left.isDown) {
-      this.player.x -= 5;
+      this.player.setVelocityX(-300); // Adjust the player's horizontal velocity
+    } else {
+      this.player.setVelocityX(0); // Stop the player's horizontal movement if no arrow key is pressed
     }
 
     if (this.arrow.down.isDown) {
-      this.player.y += 5;
+      this.player.setVelocityY(300); // Adjust the player's vertical velocity
     } else if (this.arrow.up.isDown) {
-      this.player.y -= 5;
+      this.player.setVelocityY(-300); // Adjust the player's vertical velocity
+    } else {
+      this.player.setVelocityY(0); // Stop the player's vertical movement if no arrow key is pressed
     }
-
-    this.player.setVelocity(0, 0);
   }
+
+  // update -----------------------
+
+
 
   updateTimer() {
     this.initialTime--;
@@ -161,6 +199,15 @@ class MainScene extends Phaser.Scene {
     const angle = Phaser.Math.Angle.Between(player.x, player.y, ball.x, ball.y);
     const velocityMagnitude = 500;
     ball.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
+  }
+
+  // Destroy Ball
+  destroyBall(ball, invisibleWall) {
+    if (invisibleWall === this.invisibleWall) {
+      ball.destroy();
+      this.score += 10; // Ball hits the invisible wall, increase the score by 10
+      this.scoreText.setText('Score: ' + this.score);
+    }
   }
 
   gameOver() {
