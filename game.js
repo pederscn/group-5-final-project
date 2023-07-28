@@ -3,9 +3,12 @@ class MainScene extends Phaser.Scene {
     this.load.image('background', 'assets/images/background.png');
     this.load.image('player', 'assets/images/player.png');
     this.load.image('drunk', 'assets/images/DrunkGuy2.png');
+    this.load.image('baby', 'assets/images/baby.png');
     this.load.image('goldball', 'assets/images/goldball.png');
     this.load.image('entrance', 'assets/images/invisible-wall.png');
   }
+
+  // create ----------------
 
   create() {
     this.background = this.add.image(0, 0, 'background');
@@ -38,11 +41,20 @@ class MainScene extends Phaser.Scene {
     // Call Create drunks
     this.createDrunks();
 
-    // Repeat the createdrunks function every 5 seconds (5000 milliseconds)
-    const repeatInterval = 5000; // 5 seconds in milliseconds
+    // Call Create babys
+    this.createBabys();
+
+    // Repeat Create babys and Create drunks
+    const repeatInterval = 5000;
+
+    const createBabysAndDrunks = function () {
+      this.createBabys();
+      this.createDrunks();
+    };
+
     this.time.addEvent({
       delay: repeatInterval,
-      callback: this.createDrunks,
+      callback: createBabysAndDrunks,
       callbackScope: this,
       loop: true,
     });
@@ -71,6 +83,7 @@ class MainScene extends Phaser.Scene {
 
   // create ---------------------------------
 
+
   // Create Drunks Function
   createDrunks() {
     this.drunks = this.physics.add.group({
@@ -89,6 +102,25 @@ class MainScene extends Phaser.Scene {
     });
   }
 
+  // Create Babys Function
+  createBabys() {
+    this.babys = this.physics.add.group({
+      key: 'baby',
+      repeat: 1, // Number of drunks to create (total = repeat + 1)
+      setXY: { x: 100, y: 100, stepX: 200 }, // Set the position and horizontal spacing
+    });
+
+    this.babys.children.iterate((baby) => {
+      baby.setCollideWorldBounds(true);
+      baby.setBounce(1);
+      baby.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+
+      // Set collider on each drunk individually
+      this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
+    });
+  }
+
+  // Create Buttons
   createButtons() {
     // Button styles
     const buttonStyle = {
@@ -156,6 +188,8 @@ class MainScene extends Phaser.Scene {
 
   // update -----------------------
 
+  // update -----------------------
+
   update() {
     this.physics.world.wrap(this.drunks, 16);
 
@@ -164,8 +198,14 @@ class MainScene extends Phaser.Scene {
       this.physics.world.wrap(drunk, 16, false, true, false, false);
     });
 
+    this.babys.children.iterate((baby) => {
+      this.physics.add.collider(this.player, baby, this.hit, null, this);
+      this.physics.world.wrap(baby, 16, false, true, false, false);
+    });
+
     // Check for hitting the walls (including the entrance wall)
-    this.physics.world.collide(this.drunks, this.entrance); // Remove the third argument (callback) since we don't need it here
+    this.physics.world.collide(this.drunks, this.entrance);
+    this.physics.world.collide(this.babys, this.entrance);
 
     if (this.arrow.right.isDown) {
       this.player.setVelocityX(300); // Adjust the player's horizontal velocity
@@ -183,6 +223,9 @@ class MainScene extends Phaser.Scene {
       this.player.setVelocityY(0); // Stop the player's vertical movement if no arrow key is pressed
     }
   }
+
+  // update -----------------------
+
 
   // update -----------------------
 
@@ -210,7 +253,16 @@ class MainScene extends Phaser.Scene {
   destroyDrunk(drunk, entrance) {
     if (entrance === this.entrance) {
       drunk.destroy();
-      this.score += 10; // drunk hits the invisible wall, increase the score by 10
+      this.score += 10;
+      this.scoreText.setText('Score: ' + this.score);
+    }
+  }
+
+  // Destroy baby
+  destroyBaby(baby, entrance) {
+    if (entrance === this.entrance) {
+      baby.destroy();
+      this.score -= 10;
       this.scoreText.setText('Score: ' + this.score);
     }
   }
