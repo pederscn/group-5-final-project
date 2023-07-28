@@ -6,6 +6,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('baby', 'assets/images/baby.png');
     this.load.image('goldball', 'assets/images/goldball.png');
     this.load.image('entrance', 'assets/images/invisible-wall.png');
+    this.load.image('exit', 'assets/images/invisible-wall.png');
   }
 
   // create ----------------
@@ -20,11 +21,20 @@ class MainScene extends Phaser.Scene {
     // Add the entrance wall at the center bottom
     this.entrance = this.physics.add.sprite(
       this.sys.game.config.width / 2,
-      this.sys.game.config.height - 25,
+      this.sys.game.config.height - 5,
       'entrance'
     );
     this.entrance.setImmovable(true);
-    this.entrance.displayWidth += 150; // Extend the width by 10 units
+    this.entrance.displayWidth += 150;
+
+    // Add the exit wall at the top center
+    this.exit = this.physics.add.sprite(
+      this.sys.game.config.width / 2,
+      -50,
+      'exit'
+    );
+    this.exit.setImmovable(true);
+    this.exit.displayWidth += 600; // Extend the width by 150 units
 
     // Highlight Wall
     const graphics = this.add.graphics();
@@ -59,9 +69,11 @@ class MainScene extends Phaser.Scene {
       loop: true,
     });
 
-    // Player and Entrance collision
-    this.physics.add.collider(this.player, this.entrance);
+    // Player and Entrance and Exit collision
+    this.physics.add.overlap(this.player, this.entrance); // Change from collider to overlap
+    this.physics.add.collider(this.player, this.exit, null, null, this);
 
+    // Score
     this.score = 0;
     let style = { font: '20px Arial', fill: '#fff' };
     this.scoreText = this.add.text(20, 20, 'score: ' + this.score, style);
@@ -88,8 +100,8 @@ class MainScene extends Phaser.Scene {
   createDrunks() {
     this.drunks = this.physics.add.group({
       key: 'drunk',
-      repeat: 2, // Number of drunks to create (total = repeat + 1)
-      setXY: { x: 100, y: 100, stepX: 200 }, // Set the position and horizontal spacing
+      repeat: 2,
+      setXY: { x: 100, y: 300, stepX: 200 },
     });
 
     this.drunks.children.iterate((drunk) => {
@@ -99,6 +111,7 @@ class MainScene extends Phaser.Scene {
 
       // Set collider on each drunk individually
       this.physics.add.collider(drunk, this.entrance, this.destroyDrunk, null, this);
+      this.physics.add.collider(drunk, this.exit, this.destroyDrunkExit, null, this);
     });
   }
 
@@ -106,8 +119,8 @@ class MainScene extends Phaser.Scene {
   createBabys() {
     this.babys = this.physics.add.group({
       key: 'baby',
-      repeat: 1, // Number of drunks to create (total = repeat + 1)
-      setXY: { x: 100, y: 100, stepX: 200 }, // Set the position and horizontal spacing
+      repeat: 1,
+      setXY: { x: 100, y: 300, stepX: 200 },
     });
 
     this.babys.children.iterate((baby) => {
@@ -115,8 +128,9 @@ class MainScene extends Phaser.Scene {
       baby.setBounce(1);
       baby.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
 
-      // Set collider on each drunk individually
+      // Set collider on each baby individually
       this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
+      this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
     });
   }
 
@@ -188,8 +202,6 @@ class MainScene extends Phaser.Scene {
 
   // update -----------------------
 
-  // update -----------------------
-
   update() {
     this.physics.world.wrap(this.drunks, 16);
 
@@ -203,9 +215,11 @@ class MainScene extends Phaser.Scene {
       this.physics.world.wrap(baby, 16, false, true, false, false);
     });
 
-    // Check for hitting the walls (including the entrance wall)
+    // Check for hitting the walls (including the entrance wall and exit wall)
     this.physics.world.collide(this.drunks, this.entrance);
     this.physics.world.collide(this.babys, this.entrance);
+    this.physics.world.collide(this.drunks, this.exit, this.destroyDrunkExit, null, this);
+    this.physics.world.collide(this.babys, this.exit, this.destroyBabyExit, null, this);
 
     if (this.arrow.right.isDown) {
       this.player.setVelocityX(300); // Adjust the player's horizontal velocity
@@ -227,9 +241,6 @@ class MainScene extends Phaser.Scene {
   // update -----------------------
 
 
-  // update -----------------------
-
-
 
   updateTimer() {
     this.initialTime--;
@@ -243,10 +254,10 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-  hit(player, drunk) {
-    const angle = Phaser.Math.Angle.Between(player.x, player.y, drunk.x, drunk.y);
-    const velocityMagnitude = 500;
-    drunk.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
+  hit(player, sprite) {
+    const angle = Phaser.Math.Angle.Between(player.x, player.y, sprite.x, sprite.y);
+    const velocityMagnitude = 400;
+    sprite.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
   }
 
   // Destroy drunk
@@ -258,6 +269,13 @@ class MainScene extends Phaser.Scene {
     }
   }
 
+  // Destroy drunk exit
+  destroyDrunkExit(drunk, exit) { // Fix function signature
+    if (exit === this.exit) {
+      drunk.destroy(); // Fix the object being destroyed
+    }
+  }
+
   // Destroy baby
   destroyBaby(baby, entrance) {
     if (entrance === this.entrance) {
@@ -266,6 +284,14 @@ class MainScene extends Phaser.Scene {
       this.scoreText.setText('Score: ' + this.score);
     }
   }
+
+  // Destroy baby exit
+  destroyBabyExit(baby, exit) { // Fix function signature
+    if (exit === this.exit) {
+      baby.destroy(); // Fix the object being destroyed
+    }
+  }
+
 
   gameOver() {
     this.physics.pause();
