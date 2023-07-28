@@ -2,7 +2,7 @@ class MainScene extends Phaser.Scene {
   preload() {
     this.load.image('background', 'assets/images/background.png');
     this.load.image('player', 'assets/images/bigmanallen.png');
-    this.load.image('ball', 'assets/images/ball.png');
+    this.load.image('ball', 'assets/images/DrunkGuy2.png');
     this.load.image('goldball', 'assets/images/goldball.png');
     this.load.image('entrance', 'assets/images/invisible-wall.png');
   }
@@ -23,7 +23,6 @@ class MainScene extends Phaser.Scene {
     this.entrance.setImmovable(true);
     this.entrance.displayWidth += 150; // Extend the width by 10 units
 
-
     // Highlight Wall
     const graphics = this.add.graphics();
     const highlightColor = 0x0000ff; // Blue color
@@ -36,25 +35,17 @@ class MainScene extends Phaser.Scene {
       this.entrance.height
     );
 
+    // Call Create balls
+    this.createBalls();
 
-    // creating balls
-    this.balls = this.physics.add.group({
-      key: 'ball',
-      repeat: 2, // Number of balls to create (total = repeat + 1)
-      setXY: { x: 100, y: 100, stepX: 200 } // Set the position and horizontal spacing
+    // Repeat the createBalls function every 5 seconds (5000 milliseconds)
+    const repeatInterval = 5000; // 5 seconds in milliseconds
+    this.time.addEvent({
+      delay: repeatInterval,
+      callback: this.createBalls,
+      callbackScope: this,
+      loop: true,
     });
-
-    this.balls.children.iterate((ball) => {
-      ball.setCollideWorldBounds(true);
-      ball.setBounce(1);
-      ball.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
-
-      // Set collider on each ball individually
-      this.physics.add.collider(ball, this.entrance, this.destroyBall, null, this);
-    });
-
-    // Entrance wall collision
-    this.physics.add.collider(this.balls, this.entrance, this.destroyBall, null, this);
 
     // Player and Entrance collision
     this.physics.add.collider(this.player, this.entrance);
@@ -78,11 +69,25 @@ class MainScene extends Phaser.Scene {
     this.createButtons();
   }
 
-
-
   // create ---------------------------------
 
+  // Create Balls Function
+  createBalls() {
+    this.balls = this.physics.add.group({
+      key: 'ball',
+      repeat: 2, // Number of balls to create (total = repeat + 1)
+      setXY: { x: 100, y: 100, stepX: 200 }, // Set the position and horizontal spacing
+    });
 
+    this.balls.children.iterate((ball) => {
+      ball.setCollideWorldBounds(true);
+      ball.setBounce(1);
+      ball.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+
+      // Set collider on each ball individually
+      this.physics.add.collider(ball, this.entrance, this.destroyBall, null, this);
+    });
+  }
 
   createButtons() {
     // Button styles
