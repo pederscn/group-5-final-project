@@ -1,8 +1,8 @@
 class MainScene extends Phaser.Scene {
   preload() {
     this.load.image('background', 'assets/images/background.png');
-    this.load.image('player', 'assets/images/bigmanallen.png');
-    this.load.image('ball', 'assets/images/DrunkGuy2.png');
+    this.load.image('player', 'assets/images/player.png');
+    this.load.image('drunk', 'assets/images/DrunkGuy2.png');
     this.load.image('goldball', 'assets/images/goldball.png');
     this.load.image('entrance', 'assets/images/invisible-wall.png');
   }
@@ -35,14 +35,14 @@ class MainScene extends Phaser.Scene {
       this.entrance.height
     );
 
-    // Call Create balls
-    this.createBalls();
+    // Call Create drunks
+    this.createDrunks();
 
-    // Repeat the createBalls function every 5 seconds (5000 milliseconds)
+    // Repeat the createdrunks function every 5 seconds (5000 milliseconds)
     const repeatInterval = 5000; // 5 seconds in milliseconds
     this.time.addEvent({
       delay: repeatInterval,
-      callback: this.createBalls,
+      callback: this.createDrunks,
       callbackScope: this,
       loop: true,
     });
@@ -71,21 +71,21 @@ class MainScene extends Phaser.Scene {
 
   // create ---------------------------------
 
-  // Create Balls Function
-  createBalls() {
-    this.balls = this.physics.add.group({
-      key: 'ball',
-      repeat: 2, // Number of balls to create (total = repeat + 1)
+  // Create Drunks Function
+  createDrunks() {
+    this.drunks = this.physics.add.group({
+      key: 'drunk',
+      repeat: 2, // Number of drunks to create (total = repeat + 1)
       setXY: { x: 100, y: 100, stepX: 200 }, // Set the position and horizontal spacing
     });
 
-    this.balls.children.iterate((ball) => {
-      ball.setCollideWorldBounds(true);
-      ball.setBounce(1);
-      ball.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+    this.drunks.children.iterate((drunk) => {
+      drunk.setCollideWorldBounds(true);
+      drunk.setBounce(1);
+      drunk.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
 
-      // Set collider on each ball individually
-      this.physics.add.collider(ball, this.entrance, this.destroyBall, null, this);
+      // Set collider on each drunk individually
+      this.physics.add.collider(drunk, this.entrance, this.destroyDrunk, null, this);
     });
   }
 
@@ -157,15 +157,15 @@ class MainScene extends Phaser.Scene {
   // update -----------------------
 
   update() {
-    this.physics.world.wrap(this.balls, 16);
+    this.physics.world.wrap(this.drunks, 16);
 
-    this.balls.children.iterate((ball) => {
-      this.physics.add.collider(this.player, ball, this.hit, null, this);
-      this.physics.world.wrap(ball, 16, false, true, false, false);
+    this.drunks.children.iterate((drunk) => {
+      this.physics.add.collider(this.player, drunk, this.hit, null, this);
+      this.physics.world.wrap(drunk, 16, false, true, false, false);
     });
 
     // Check for hitting the walls (including the entrance wall)
-    this.physics.world.collide(this.balls, this.entrance); // Remove the third argument (callback) since we don't need it here
+    this.physics.world.collide(this.drunks, this.entrance); // Remove the third argument (callback) since we don't need it here
 
     if (this.arrow.right.isDown) {
       this.player.setVelocityX(300); // Adjust the player's horizontal velocity
@@ -200,17 +200,17 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-  hit(player, ball) {
-    const angle = Phaser.Math.Angle.Between(player.x, player.y, ball.x, ball.y);
+  hit(player, drunk) {
+    const angle = Phaser.Math.Angle.Between(player.x, player.y, drunk.x, drunk.y);
     const velocityMagnitude = 500;
-    ball.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
+    drunk.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
   }
 
-  // Destroy Ball
-  destroyBall(ball, entrance) {
+  // Destroy drunk
+  destroyDrunk(drunk, entrance) {
     if (entrance === this.entrance) {
-      ball.destroy();
-      this.score += 10; // Ball hits the invisible wall, increase the score by 10
+      drunk.destroy();
+      this.score += 10; // drunk hits the invisible wall, increase the score by 10
       this.scoreText.setText('Score: ' + this.score);
     }
   }
