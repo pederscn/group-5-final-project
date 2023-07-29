@@ -1,6 +1,7 @@
 class MainScene extends Phaser.Scene {
   preload() {
     this.load.image(`background`, `assets/images/background.png`);
+    this.load.image(`rep0`, `assets/images/rep 0.png`);
     this.load.image(`rep1`, `assets/images/rep 1.png`);
     this.load.image(`rep2`, `assets/images/rep 2.png`);
     this.load.image(`rep3`, `assets/images/rep 3.png`);
@@ -18,6 +19,9 @@ class MainScene extends Phaser.Scene {
   create() {
     this.background = this.add.image(0, 0, `background`);
     this.background.setOrigin(0, 0);
+
+    this.repImage = this.add.image(120, 21, `rep5`);
+    this.repImage.setScale(1.2);
 
     this.player = this.physics.add.sprite(400, 350, `player`);
     this.player.setCollideWorldBounds(true);
@@ -58,6 +62,9 @@ class MainScene extends Phaser.Scene {
     //create babys
     this.createBabys();
 
+    // update rep image
+    this.updateRepImage();
+
     //repeat
     const repeatInterval = 5000;
 
@@ -79,8 +86,8 @@ class MainScene extends Phaser.Scene {
 
     // Score
     this.score = 0;
-    let style = { font: `20px Arial`, fill: `#fff` };
-    this.scoreText = this.add.text(20, 20, `score: ` + this.score, style);
+    let style = { font: `30px Arial`, fill: `#000` };
+    this.scoreText = this.add.text(600, 5, `Score: ` + this.score, style);
 
     // Reputation
     this.reputation = 5;
@@ -128,6 +135,28 @@ class MainScene extends Phaser.Scene {
       this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
     });
+  }
+
+  updateRepImage() {
+    switch (this.reputation) {
+      case 5:
+        this.repImage.setTexture(`rep5`);
+        break;
+      case 4:
+        this.repImage.setTexture(`rep4`);
+        break;
+      case 3:
+        this.repImage.setTexture(`rep3`);
+        break;
+      case 2:
+        this.repImage.setTexture(`rep2`);
+        break;
+      case 1:
+        this.repImage.setTexture(`rep1`);
+        break;
+      case 0:
+        this.repImage.setTexture(`rep0`);
+    }
   }
 
   // Create Buttons
@@ -263,6 +292,7 @@ class MainScene extends Phaser.Scene {
       this.scoreText.setText(`Score: ` + this.score);
 
       this.reputation--;
+      this.updateRepImage();
       if (this.reputation === 0) {
         this.gameOver();
       }
