@@ -12,6 +12,7 @@ class MainScene extends Phaser.Scene {
     this.load.image(`baby`, `assets/images/baby.png`);
     this.load.image(`entrance`, `assets/images/invisible-wall.png`);
     this.load.image(`exit`, `assets/images/invisible-wall.png`);
+    this.load.image(`fired`, `assets/images/fired.gif`);
   }
 
   // create ----------------
@@ -22,8 +23,9 @@ class MainScene extends Phaser.Scene {
 
     this.repImage = this.add.image(120, 21, `rep5`);
     this.repImage.setScale(0.6);
+    this.repImage.setDepth(10);
 
-    this.player = this.physics.add.sprite(400, 350, `player`);
+    this.player = this.physics.add.sprite(400, 400, `player`);
     this.player.setCollideWorldBounds(true);
 
     //entrance wall
@@ -68,17 +70,27 @@ class MainScene extends Phaser.Scene {
     //repeat
     const repeatInterval = 5000;
 
+    /*
     const createBabysAndDrunks = function () {
       this.createBabys();
       this.createDrunks();
     };
-
+  
     this.time.addEvent({
       delay: repeatInterval,
       callback: createBabysAndDrunks,
       callbackScope: this,
       loop: true,
     });
+    */
+
+    /*
+    this.createBabysEvent = this.time.addEvent({
+      delay: Phaser.Math.Between(5000, 10000),
+      callback: this.createBabys,
+      callbackScope: this,
+    });
+    */
 
     // Player and Entrance and Exit collision
     this.physics.add.overlap(this.player, this.entrance);
@@ -88,6 +100,7 @@ class MainScene extends Phaser.Scene {
     this.score = 0;
     let style = { font: `30px Arial`, fill: `#000` };
     this.scoreText = this.add.text(600, 5, `Score: ` + this.score, style);
+    this.scoreText.setDepth(10);
 
     // Reputation
     this.reputation = 5;
@@ -105,7 +118,9 @@ class MainScene extends Phaser.Scene {
   createDrunks() {
     this.drunks = this.physics.add.group();
 
-    for (let i = 0; i < 3; i++) {
+    const numOfDrunks = Phaser.Math.Between(2, 4);
+
+    for (let i = 0; i < numOfDrunks; i++) {
       const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
       const yPosition = Phaser.Math.Between(100, 300);
 
@@ -117,13 +132,21 @@ class MainScene extends Phaser.Scene {
       this.physics.add.collider(drunk, this.entrance, this.destroyDrunk, null, this);
       this.physics.add.collider(drunk, this.exit, this.destroyDrunkExit, null, this);
     }
+
+    this.createDrunksEvent = this.time.addEvent({
+      delay: Phaser.Math.Between(4000, 5000),
+      callback: this.createDrunks,
+      callbackScope: this,
+    });
   }
 
   // Create Babys
   createBabys() {
     this.babys = this.physics.add.group();
 
-    for (let i = 0; i < 3; i++) {
+    const numOfBabys = Phaser.Math.Between(1, 2);
+
+    for (let i = 0; i < numOfBabys; i++) {
       const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
       const yPosition = Phaser.Math.Between(100, 300);
 
@@ -135,6 +158,12 @@ class MainScene extends Phaser.Scene {
       this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
     }
+
+    this.createBabysEvent = this.time.addEvent({
+      delay: Phaser.Math.Between(5000, 10000),
+      callback: this.createBabys,
+      callbackScope: this,
+    });
   }
 
   updateRepImage() {
@@ -310,14 +339,26 @@ class MainScene extends Phaser.Scene {
 
   gameOver() {
     this.physics.pause();
+    this.scoreText.destroy();
+
+    this.createBabysEvent.remove();
+    this.createDrunksEvent.remove();
+
+    const firedGif = this.add.image(
+      this.sys.game.config.width / 2,
+      this.sys.game.config.height / 2 - 35,
+      `fired`
+    );
+    firedGif.setOrigin(0.5);
+    firedGif.setDepth(10);
     let finalScoreText = this.add.text(
       this.sys.game.config.width / 2,
-      this.sys.game.config.height / 2,
-      `YOU'RE FIRED`,
+      this.sys.game.config.height / 2 + 15,
       `Final Score: ` + this.score,
-      { font: `32px Arial`, fill: `#fff`, align: `center` }
+      { font: `40px Arial`, fill: `#fff`, align: `center` }
     );
     finalScoreText.setOrigin(0.5);
+    finalScoreText.setDepth(10);
   }
 }
 
