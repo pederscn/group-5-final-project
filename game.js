@@ -64,33 +64,31 @@ class MainScene extends Phaser.Scene {
     //create babys
     this.createBabys();
 
+    /*
+    //create babys event
+    this.createBabysEvent = this.time.addEvent({
+      delay: Phaser.Math.Between(5000, 10000),
+      callback: this.createBabys,
+      callbackScope: this,
+      loop: true,
+      paused: false,
+    });
+
+    //create drunks
+    this.createDrunksEvent = this.time.addEvent({
+      delay: Phaser.Math.Between(4000, 5000),
+      callback: this.createDrunks,
+      callbackScope: this,
+      loop: true,
+      paused: false,
+    });
+    */
+
     // update rep image
     this.updateRepImage();
 
     //repeat
     const repeatInterval = 5000;
-
-    /*
-    const createBabysAndDrunks = function () {
-      this.createBabys();
-      this.createDrunks();
-    };
-  
-    this.time.addEvent({
-      delay: repeatInterval,
-      callback: createBabysAndDrunks,
-      callbackScope: this,
-      loop: true,
-    });
-    */
-
-    /*
-    this.createBabysEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(5000, 10000),
-      callback: this.createBabys,
-      callbackScope: this,
-    });
-    */
 
     // Player and Entrance and Exit collision
     this.physics.add.overlap(this.player, this.entrance);
@@ -137,6 +135,7 @@ class MainScene extends Phaser.Scene {
       delay: Phaser.Math.Between(4000, 5000),
       callback: this.createDrunks,
       callbackScope: this,
+      paused: false,
     });
   }
 
@@ -163,6 +162,7 @@ class MainScene extends Phaser.Scene {
       delay: Phaser.Math.Between(5000, 10000),
       callback: this.createBabys,
       callbackScope: this,
+      paused: false,
     });
   }
 
@@ -237,9 +237,11 @@ class MainScene extends Phaser.Scene {
     this.physics.pause();
     this.arrow.enabled = false;
     this.player.setVelocity(0, 0);
-
     this.pauseButton.visible = false;
     this.resumeButton.visible = true;
+
+    this.createBabysEvent.paused = true;
+    this.createDrunksEvent.paused = true;
   }
 
   resumeGame() {
@@ -247,6 +249,9 @@ class MainScene extends Phaser.Scene {
     this.arrow.enabled = true;
     this.pauseButton.visible = true;
     this.resumeButton.visible = false;
+
+    this.createBabysEvent.paused = false;
+    this.createDrunksEvent.paused = false;
   }
 
 
