@@ -370,7 +370,8 @@ class MainScene extends Phaser.Scene {
   destroyDrunkExit(drunk, exit) {
     if (exit === this.exit) {
       drunk.destroy();
-      this.score -= 5;
+      this.score -= 25;
+      this.scoreText.setText(`Score: ` + this.score);
     }
   }
 
@@ -378,7 +379,7 @@ class MainScene extends Phaser.Scene {
   destroyBaby(baby, entrance) {
     if (entrance === this.entrance) {
       baby.destroy();
-      this.score -= 10;
+      this.score -= 50;
       this.scoreText.setText(`Score: ` + this.score);
 
       this.reputation--;
@@ -393,6 +394,8 @@ class MainScene extends Phaser.Scene {
   destroyBabyExit(baby, exit) {
     if (exit === this.exit) {
       baby.destroy();
+      this.score += 35;
+      this.scoreText.setText(`Score: ` + this.score);
     }
   }
 
@@ -400,6 +403,7 @@ class MainScene extends Phaser.Scene {
   destroyLadiesNight(ladiesnight, entrance) {
     if (entrance === this.entrance) {
       ladiesnight.destroy();
+      this.createWoman();
 
       const flashDuration = 500;
       const totalFlashDuration = 13000;
@@ -434,12 +438,30 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-
-
   // Destroy ladiesnight exit
   destroyLadiesNightExit(ladiesnight, exit) {
     if (exit === this.exit) {
       ladiesnight.destroy();
+    }
+  }
+
+  // Destroy Woman
+  destroyWoman(woman, entrance) {
+    if (entrance === this.entrance) {
+      woman.destroy();
+      this.score += 500;
+      this.scoreText.setText(`Score: ` + this.score);
+      this.reputation++;
+      this.updateRepImage();
+    }
+  }
+
+  // Destroy Woman Exit
+  destroyWomanExit(woman, exit) {
+    if (exit === this.exit) {
+      woman.destroy();
+      this.score -= 50;
+      this.scoreText.setText(`Score: ` + this.score);
     }
   }
 
