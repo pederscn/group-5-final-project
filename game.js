@@ -112,7 +112,7 @@ class MainScene extends Phaser.Scene {
     this.drunks.children.iterate((drunk) => {
       drunk.setCollideWorldBounds(true);
       drunk.setBounce(1);
-      drunk.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+      drunk.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-50, 50));
 
       this.physics.add.collider(drunk, this.entrance, this.destroyDrunk, null, this);
       this.physics.add.collider(drunk, this.exit, this.destroyDrunkExit, null, this);
@@ -130,7 +130,7 @@ class MainScene extends Phaser.Scene {
     this.babys.children.iterate((baby) => {
       baby.setCollideWorldBounds(true);
       baby.setBounce(1);
-      baby.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+      baby.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
 
       this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
@@ -175,7 +175,7 @@ class MainScene extends Phaser.Scene {
     // Pause button
     this.pauseButton = this.add.text(
       this.sys.game.config.width - 540,
-      10,
+      5,
       `Pause`,
       buttonStyle
     );
@@ -185,7 +185,7 @@ class MainScene extends Phaser.Scene {
     // Resume button (hidden initially)
     this.resumeButton = this.add.text(
       this.sys.game.config.width - 540,
-      10,
+      5,
       `Resume`,
       buttonStyle
     );
@@ -196,7 +196,7 @@ class MainScene extends Phaser.Scene {
     // End button
     this.endButton = this.add.text(
       this.sys.game.config.width - 400,
-      10,
+      5,
       `End Game`,
       buttonStyle
     );
@@ -243,17 +243,17 @@ class MainScene extends Phaser.Scene {
     this.physics.world.collide(this.babys, this.exit, this.destroyBabyExit, null, this);
 
     if (this.arrow.right.isDown) {
-      this.player.setVelocityX(300);
+      this.player.setVelocityX(350);
     } else if (this.arrow.left.isDown) {
-      this.player.setVelocityX(-300);
+      this.player.setVelocityX(-350);
     } else {
       this.player.setVelocityX(0);
     }
 
     if (this.arrow.down.isDown) {
-      this.player.setVelocityY(300);
+      this.player.setVelocityY(350);
     } else if (this.arrow.up.isDown) {
-      this.player.setVelocityY(-300);
+      this.player.setVelocityY(-350);
     } else {
       this.player.setVelocityY(0);
     }
@@ -272,7 +272,7 @@ class MainScene extends Phaser.Scene {
   destroyDrunk(drunk, entrance) {
     if (entrance === this.entrance) {
       drunk.destroy();
-      this.score += 10;
+      this.score += 125;
       this.scoreText.setText(`Score: ` + this.score);
     }
   }
@@ -281,6 +281,7 @@ class MainScene extends Phaser.Scene {
   destroyDrunkExit(drunk, exit) {
     if (exit === this.exit) {
       drunk.destroy();
+      this.score -= 5;
     }
   }
 
