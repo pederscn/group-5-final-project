@@ -17,5 +17,6 @@
     "**/node_modules": true,
     "**/dist": true,
     "**/docs": true
-  }
+  },
+  "liveServer.settings.port": 5501
 }
