@@ -116,7 +116,7 @@ class MainScene extends Phaser.Scene {
   createDrunks() {
     this.drunks = this.physics.add.group();
 
-    const numOfDrunks = Phaser.Math.Between(2, 4);
+    const numOfDrunks = Phaser.Math.Between(3, 6);
 
     for (let i = 0; i < numOfDrunks; i++) {
       const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
@@ -132,7 +132,7 @@ class MainScene extends Phaser.Scene {
     }
 
     this.createDrunksEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(4000, 5000),
+      delay: Phaser.Math.Between(3000, 5000),
       callback: this.createDrunks,
       callbackScope: this,
       paused: false,
