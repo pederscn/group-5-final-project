@@ -103,38 +103,38 @@ class MainScene extends Phaser.Scene {
 
   // Create Drunks
   createDrunks() {
-    this.drunks = this.physics.add.group({
-      key: `drunk`,
-      repeat: 2,
-      setXY: { x: 100, y: 300, stepX: 200 },
-    });
+    this.drunks = this.physics.add.group();
 
-    this.drunks.children.iterate((drunk) => {
+    for (let i = 0; i < 3; i++) {
+      const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+      const yPosition = Phaser.Math.Between(100, 300);
+
+      const drunk = this.drunks.create(xPosition, yPosition, `drunk`);
       drunk.setCollideWorldBounds(true);
-      drunk.setBounce(1);
+      drunk.setBounce(0.8);
       drunk.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-50, 50));
 
       this.physics.add.collider(drunk, this.entrance, this.destroyDrunk, null, this);
       this.physics.add.collider(drunk, this.exit, this.destroyDrunkExit, null, this);
-    });
+    }
   }
 
   // Create Babys
   createBabys() {
-    this.babys = this.physics.add.group({
-      key: `baby`,
-      repeat: 1,
-      setXY: { x: 100, y: 300, stepX: 200 },
-    });
+    this.babys = this.physics.add.group();
 
-    this.babys.children.iterate((baby) => {
+    for (let i = 0; i < 3; i++) {
+      const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+      const yPosition = Phaser.Math.Between(100, 300);
+
+      const baby = this.babys.create(xPosition, yPosition, `baby`);
       baby.setCollideWorldBounds(true);
-      baby.setBounce(1);
+      baby.setBounce(0.8);
       baby.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
 
       this.physics.add.collider(baby, this.entrance, this.destroyBaby, null, this);
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
-    });
+    }
   }
 
   updateRepImage() {
