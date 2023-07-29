@@ -21,7 +21,7 @@ class MainScene extends Phaser.Scene {
     this.background.setOrigin(0, 0);
 
     this.repImage = this.add.image(120, 21, `rep5`);
-    this.repImage.setScale(1.2);
+    this.repImage.setScale(0.6);
 
     this.player = this.physics.add.sprite(400, 350, `player`);
     this.player.setCollideWorldBounds(true);
