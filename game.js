@@ -10,12 +10,21 @@ class MainScene extends Phaser.Scene {
     this.load.image(`player`, `assets/images/player.png`);
     this.load.image(`drunk`, `assets/images/DrunkGuy2.png`);
     this.load.image(`baby`, `assets/images/baby.png`);
+    this.load.image(`ladiesnight`, `assets/images/ladiesnight.png`);
+    this.load.image(`woman`, `assets/images/woman.png`);
     this.load.image(`entrance`, `assets/images/invisible-wall.png`);
     this.load.image(`exit`, `assets/images/invisible-wall.png`);
     this.load.image(`fired`, `assets/images/fired.gif`);
   }
 
-  // create ----------------
+  // Counter for every 4th baby spawned
+  constructor() {
+    super();
+    // Other constructor code
+    this.createBabysCounter = 0;
+  }
+
+  // create -----------------------------------
 
   create() {
     this.background = this.add.image(0, 0, `background`);
@@ -109,8 +118,8 @@ class MainScene extends Phaser.Scene {
     this.createButtons();
   }
 
-  // create ---------------------------------
 
+  // Sprite Spawns -----------------------------------
 
   // Create Drunks
   createDrunks() {
@@ -158,12 +167,56 @@ class MainScene extends Phaser.Scene {
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
     }
 
+    // Increment the counter for createBabys
+    this.createBabysCounter++;
+
+    // Check if the counter is a multiple of 4 (every 4th time)
+    if (this.createBabysCounter % 4 === 0) {
+      this.createLadiesNight();
+    }
+
     this.createBabysEvent = this.time.addEvent({
       delay: Phaser.Math.Between(5000, 10000),
       callback: this.createBabys,
       callbackScope: this,
       paused: false,
     });
+  }
+
+  // Create Ladies Night
+  createLadiesNight() {
+    const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+    const yPosition = Phaser.Math.Between(100, 300);
+
+    const ladiesnight = this.physics.add.sprite(xPosition, yPosition, 'ladiesnight');
+    ladiesnight.setCollideWorldBounds(true);
+    ladiesnight.setBounce(0.8);
+    ladiesnight.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
+
+    this.physics.add.collider(ladiesnight, this.entrance, this.destroyLadiesNight, null, this);
+    this.physics.add.collider(ladiesnight, this.exit, this.destroyLadiesNightExit, null, this);
+    this.physics.add.collider(ladiesnight, this.player, this.collectLadiesNight, null, this);
+  }
+
+  // Create Woman
+  createWoman() {
+    this.womans = this.physics.add.group();
+
+    const numOfWomans = 15;
+
+    for (let i = 0; i < numOfWomans; i++) {
+      const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+      const yPosition = Phaser.Math.Between(100, 300);
+
+      const woman = this.womans.create(xPosition, yPosition, `woman`);
+      woman.setCollideWorldBounds(true);
+      woman.setBounce(0.8);
+      woman.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
+
+      this.physics.add.collider(woman, this.entrance, this.destroyWoman, null, this);
+      this.physics.add.collider(woman, this.exit, this.destroyWomanExit, null, this);
+      this.physics.add.collider(woman, this.player, this.collectWoman, null, this);
+    }
   }
 
   updateRepImage() {
@@ -187,6 +240,8 @@ class MainScene extends Phaser.Scene {
         this.repImage.setTexture(`rep0`);
     }
   }
+
+  // Buttons -----------------------------------
 
   // Create Buttons
   createButtons() {
@@ -255,7 +310,7 @@ class MainScene extends Phaser.Scene {
   }
 
 
-  // update -----------------------
+  // update -----------------------------------
 
   update() {
     this.physics.world.wrap(this.drunks, 16);
@@ -293,14 +348,14 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-  // update -----------------------
-
 
   hit(player, sprite) {
     const angle = Phaser.Math.Angle.Between(player.x, player.y, sprite.x, sprite.y);
     const velocityMagnitude = 400;
     sprite.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
   }
+
+  // Destroys -----------------------------------
 
   // Destroy drunk
   destroyDrunk(drunk, entrance) {
@@ -338,6 +393,53 @@ class MainScene extends Phaser.Scene {
   destroyBabyExit(baby, exit) {
     if (exit === this.exit) {
       baby.destroy();
+    }
+  }
+
+  // Destroy ladiesnight
+  destroyLadiesNight(ladiesnight, entrance) {
+    if (entrance === this.entrance) {
+      ladiesnight.destroy();
+
+      const flashDuration = 500;
+      const totalFlashDuration = 13000;
+      const flashColors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ff00ff',
+        '#ffff00',
+        '#00ffff',
+      ];
+
+      let currentIndex = 0;
+      let elapsedTime = 0;
+
+      const changeBackgroundColor = () => {
+        document.body.style.backgroundColor = flashColors[currentIndex];
+
+        currentIndex++;
+        if (currentIndex >= flashColors.length) {
+          currentIndex = 0;
+        }
+
+        elapsedTime += flashDuration;
+        if (elapsedTime >= totalFlashDuration) {
+          clearInterval(this.backgroundInterval);
+          document.body.style.backgroundColor = '';
+        }
+      };
+
+      this.backgroundInterval = setInterval(changeBackgroundColor, flashDuration);
+    }
+  }
+
+
+
+  // Destroy ladiesnight exit
+  destroyLadiesNightExit(ladiesnight, exit) {
+    if (exit === this.exit) {
+      ladiesnight.destroy();
     }
   }
 
