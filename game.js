@@ -1,4 +1,6 @@
 class MainScene extends Phaser.Scene {
+
+  // Preload -----------------------------------
   preload() {
     this.load.image(`background`, `assets/images/background.png`);
     this.load.image(`rep0`, `assets/images/rep 0.png`);
@@ -17,14 +19,13 @@ class MainScene extends Phaser.Scene {
     this.load.image(`fired`, `assets/images/fired.gif`);
   }
 
-  // Counter for every 4th baby spawned
+  // Counter 
   constructor() {
     super();
-    // Other constructor code
     this.createBabysCounter = 0;
   }
 
-  // create -----------------------------------
+  // Create -----------------------------------
 
   create() {
     this.background = this.add.image(0, 0, `background`);
@@ -37,7 +38,7 @@ class MainScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(400, 400, `player`);
     this.player.setCollideWorldBounds(true);
 
-    //entrance wall
+    // Entrance wall
     this.entrance = this.physics.add.sprite(
       this.sys.game.config.width / 2,
       this.sys.game.config.height - 5,
@@ -46,7 +47,7 @@ class MainScene extends Phaser.Scene {
     this.entrance.setImmovable(true);
     this.entrance.displayWidth += 150;
 
-    //exit wall
+    // Exit wall
     this.exit = this.physics.add.sprite(
       this.sys.game.config.width / 2,
       -50,
@@ -55,49 +56,13 @@ class MainScene extends Phaser.Scene {
     this.exit.setImmovable(true);
     this.exit.displayWidth += 600;
 
-    // highlight Wall
-    const graphics = this.add.graphics();
-    const highlightColor = 0x0000ff;
-    const highlightAlpha = 0.5;
-    graphics.lineStyle(5, highlightColor, highlightAlpha);
-    graphics.strokeRect(
-      this.entrance.x - this.entrance.displayWidth / 2,
-      this.entrance.y - this.entrance.height / 2,
-      this.entrance.displayWidth,
-      this.entrance.height
-    );
-
-    //create drunks
+    // Create drunks
     this.createDrunks();
 
-    //create babys
+    // Create babys
     this.createBabys();
 
-    /*
-    //create babys event
-    this.createBabysEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(5000, 10000),
-      callback: this.createBabys,
-      callbackScope: this,
-      loop: true,
-      paused: false,
-    });
-
-    //create drunks
-    this.createDrunksEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(4000, 5000),
-      callback: this.createDrunks,
-      callbackScope: this,
-      loop: true,
-      paused: false,
-    });
-    */
-
-    // update rep image
     this.updateRepImage();
-
-    //repeat
-    const repeatInterval = 5000;
 
     // Player and Entrance and Exit collision
     this.physics.add.overlap(this.player, this.entrance);
@@ -114,7 +79,7 @@ class MainScene extends Phaser.Scene {
 
     this.arrow = this.input.keyboard.createCursorKeys();
 
-    // buttons for pausing and ending the game
+    // Buttons for pausing and ending the game
     this.createButtons();
   }
 
@@ -310,7 +275,7 @@ class MainScene extends Phaser.Scene {
   }
 
 
-  // update -----------------------------------
+  // Update -----------------------------------
 
   update() {
     this.physics.world.wrap(this.drunks, 16);
@@ -325,7 +290,7 @@ class MainScene extends Phaser.Scene {
       this.physics.world.wrap(baby, 16, false, true, false, false);
     });
 
-    // Check for hitting the walls (including the entrance wall and exit wall)
+    // Check for hitting the walls
     this.physics.world.collide(this.drunks, this.entrance);
     this.physics.world.collide(this.babys, this.entrance);
     this.physics.world.collide(this.drunks, this.exit, this.destroyDrunkExit, null, this);
@@ -347,7 +312,6 @@ class MainScene extends Phaser.Scene {
       this.player.setVelocityY(0);
     }
   }
-
 
   hit(player, sprite) {
     const angle = Phaser.Math.Angle.Between(player.x, player.y, sprite.x, sprite.y);
@@ -492,12 +456,12 @@ class MainScene extends Phaser.Scene {
 }
 
 let config = {
-  width: 800, // Width of the game in pixels
-  height: 500, // Height of the game in pixels
-  backgroundColor: `#3498db`, // The background color (blue)
-  scene: MainScene, // The name of the scene we created
-  physics: { default: `arcade` }, // The physics engine to use
-  parent: `game`, // Create the game inside the <div id="game">
+  width: 800,
+  height: 500,
+  backgroundColor: `#3498db`,
+  scene: MainScene,
+  physics: { default: `arcade` },
+  parent: `game`,
 };
 
 let game = new Phaser.Game(config);
