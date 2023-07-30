@@ -49,7 +49,7 @@ class MainScene extends Phaser.Scene {
 
     // Highlight
     const highlightBox = this.add.graphics();
-    highlightBox.lineStyle(4, 0xff0000); // Choose the color and line width for the box
+    highlightBox.lineStyle(4, 0xff0000);
     highlightBox.strokeRect(
       this.entrance.x - this.entrance.displayWidth / 2,
       this.entrance.y - this.entrance.displayHeight / 2,
@@ -145,7 +145,7 @@ class MainScene extends Phaser.Scene {
     // Increment the counter for createBabys
     this.createBabysCounter++;
 
-    // Check if the counter is a multiple of 4 (every 4th time)
+    //counter
     if (this.createBabysCounter % 4 === 0) {
       this.createLadiesNight();
     }
@@ -163,7 +163,7 @@ class MainScene extends Phaser.Scene {
     const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
     const yPosition = Phaser.Math.Between(100, 300);
 
-    const ladiesnight = this.physics.add.sprite(xPosition, yPosition, 'ladiesnight');
+    const ladiesnight = this.physics.add.sprite(xPosition, yPosition, `ladiesnight`);
     ladiesnight.setCollideWorldBounds(true);
     ladiesnight.setBounce(0.8);
     ladiesnight.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
@@ -382,12 +382,12 @@ class MainScene extends Phaser.Scene {
       const flashDuration = 500;
       const totalFlashDuration = 13000;
       const flashColors = [
-        '#ff0000',
-        '#00ff00',
-        '#0000ff',
-        '#ff00ff',
-        '#ffff00',
-        '#00ffff',
+        `#ff0000`,
+        `#00ff00`,
+        `#0000ff`,
+        `#ff00ff`,
+        `#ffff00`,
+        `#00ffff`,
       ];
 
       let currentIndex = 0;
@@ -404,7 +404,7 @@ class MainScene extends Phaser.Scene {
         elapsedTime += flashDuration;
         if (elapsedTime >= totalFlashDuration) {
           clearInterval(this.backgroundInterval);
-          document.body.style.backgroundColor = '';
+          document.body.style.backgroundColor = ``;
         }
       };
 

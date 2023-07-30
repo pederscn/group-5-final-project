@@ -12,44 +12,41 @@ class Scene1 extends Phaser.Scene {
   }
 
   create() {
-    // Add background image
     this.add.image(0, 0, `background`).setOrigin(0, 0);
 
-    // Add instructions text
     this.add.text(
       this.game.config.width / 2,
       this.game.config.height / 2,
-      "Instructions:\n\nUse arrow keys to move.\nAllow all of the adults into the bar, bounce all of the babies out!",
+      `Instructions:\n\nUse arrow keys to move.\nAllow all of the adults into the bar, bounce all of the babies out!`,
       {
-        font: "20px Arial",
-        fill: "#ffffff",
-        align: "center"
+        font: `20px Arial`,
+        fill: `#ffffff`,
+        align: `center`
       }
     ).setOrigin(0.5);
 
-    // Add start button
+    //start button
     const startButton = this.add.text(
       this.game.config.width / 2,
       this.game.config.height - 100,
-      "Start Game",
+      `Start Game`,
       {
-        font: "30px Arial",
-        fill: "#ffffff",
-        align: "center"
+        font: `30px Arial`,
+        fill: `#ffffff`,
+        align: `center`
       }
     ).setOrigin(0.5);
-    startButton.setInteractive(); // Enable input on the button
-    startButton.on("pointerdown", () => {
-      this.scene.start("bootGame"); // Replace "playGame" with the scene key for your game's main scene
+    startButton.setInteractive();
+    startButton.on(`pointerdown`, () => {
+      this.scene.start(`bootGame`);
     });
 
-    // Add button hover effect
-    startButton.on("pointerover", () => {
-      startButton.setStyle({ fill: "#ff0" });
+    startButton.on(`pointerover`, () => {
+      startButton.setStyle({ fill: `#ff0` });
     });
 
-    startButton.on("pointerout", () => {
-      startButton.setStyle({ fill: "#ffffff" });
+    startButton.on(`pointerout`, () => {
+      startButton.setStyle({ fill: `#ffffff` });
     });
   }
 }
