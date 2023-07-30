@@ -47,6 +47,16 @@ class MainScene extends Phaser.Scene {
     this.entrance.setImmovable(true);
     this.entrance.displayWidth += 150;
 
+    // Highlight
+    const highlightBox = this.add.graphics();
+    highlightBox.lineStyle(4, 0xff0000); // Choose the color and line width for the box
+    highlightBox.strokeRect(
+      this.entrance.x - this.entrance.displayWidth / 2,
+      this.entrance.y - this.entrance.displayHeight / 2,
+      this.entrance.displayWidth,
+      this.entrance.displayHeight
+    );
+
     // Exit wall
     this.exit = this.physics.add.sprite(
       this.sys.game.config.width / 2,
