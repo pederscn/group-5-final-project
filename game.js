@@ -1,4 +1,6 @@
 class MainScene extends Phaser.Scene {
+
+  // Preload -----------------------------------
   preload() {
     this.load.image(`background`, `assets/images/background.png`);
     this.load.image(`rep0`, `assets/images/rep 0.png`);
@@ -10,12 +12,20 @@ class MainScene extends Phaser.Scene {
     this.load.image(`player`, `assets/images/player.png`);
     this.load.image(`drunk`, `assets/images/DrunkGuy2.png`);
     this.load.image(`baby`, `assets/images/baby.png`);
+    this.load.image(`ladiesnight`, `assets/images/ladiesnight.png`);
+    this.load.image(`woman`, `assets/images/woman.png`);
     this.load.image(`entrance`, `assets/images/invisible-wall.png`);
     this.load.image(`exit`, `assets/images/invisible-wall.png`);
     this.load.image(`fired`, `assets/images/fired.gif`);
   }
 
-  // create ----------------
+  // Counter 
+  constructor() {
+    super();
+    this.createBabysCounter = 0;
+  }
+
+  // Create -----------------------------------
 
   create() {
     this.background = this.add.image(0, 0, `background`);
@@ -28,7 +38,7 @@ class MainScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(400, 400, `player`);
     this.player.setCollideWorldBounds(true);
 
-    //entrance wall
+    // Entrance wall
     this.entrance = this.physics.add.sprite(
       this.sys.game.config.width / 2,
       this.sys.game.config.height - 5,
@@ -37,7 +47,7 @@ class MainScene extends Phaser.Scene {
     this.entrance.setImmovable(true);
     this.entrance.displayWidth += 150;
 
-    //exit wall
+    // Exit wall
     this.exit = this.physics.add.sprite(
       this.sys.game.config.width / 2,
       -50,
@@ -46,49 +56,13 @@ class MainScene extends Phaser.Scene {
     this.exit.setImmovable(true);
     this.exit.displayWidth += 600;
 
-    // highlight Wall
-    const graphics = this.add.graphics();
-    const highlightColor = 0x0000ff;
-    const highlightAlpha = 0.5;
-    graphics.lineStyle(5, highlightColor, highlightAlpha);
-    graphics.strokeRect(
-      this.entrance.x - this.entrance.displayWidth / 2,
-      this.entrance.y - this.entrance.height / 2,
-      this.entrance.displayWidth,
-      this.entrance.height
-    );
-
-    //create drunks
+    // Create drunks
     this.createDrunks();
 
-    //create babys
+    // Create babys
     this.createBabys();
 
-    /*
-    //create babys event
-    this.createBabysEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(5000, 10000),
-      callback: this.createBabys,
-      callbackScope: this,
-      loop: true,
-      paused: false,
-    });
-
-    //create drunks
-    this.createDrunksEvent = this.time.addEvent({
-      delay: Phaser.Math.Between(4000, 5000),
-      callback: this.createDrunks,
-      callbackScope: this,
-      loop: true,
-      paused: false,
-    });
-    */
-
-    // update rep image
     this.updateRepImage();
-
-    //repeat
-    const repeatInterval = 5000;
 
     // Player and Entrance and Exit collision
     this.physics.add.overlap(this.player, this.entrance);
@@ -105,12 +79,12 @@ class MainScene extends Phaser.Scene {
 
     this.arrow = this.input.keyboard.createCursorKeys();
 
-    // buttons for pausing and ending the game
+    // Buttons for pausing and ending the game
     this.createButtons();
   }
 
-  // create ---------------------------------
 
+  // Sprite Spawns -----------------------------------
 
   // Create Drunks
   createDrunks() {
@@ -158,12 +132,56 @@ class MainScene extends Phaser.Scene {
       this.physics.add.collider(baby, this.exit, this.destroyBabyExit, null, this);
     }
 
+    // Increment the counter for createBabys
+    this.createBabysCounter++;
+
+    // Check if the counter is a multiple of 4 (every 4th time)
+    if (this.createBabysCounter % 4 === 0) {
+      this.createLadiesNight();
+    }
+
     this.createBabysEvent = this.time.addEvent({
       delay: Phaser.Math.Between(5000, 10000),
       callback: this.createBabys,
       callbackScope: this,
       paused: false,
     });
+  }
+
+  // Create Ladies Night
+  createLadiesNight() {
+    const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+    const yPosition = Phaser.Math.Between(100, 300);
+
+    const ladiesnight = this.physics.add.sprite(xPosition, yPosition, 'ladiesnight');
+    ladiesnight.setCollideWorldBounds(true);
+    ladiesnight.setBounce(0.8);
+    ladiesnight.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
+
+    this.physics.add.collider(ladiesnight, this.entrance, this.destroyLadiesNight, null, this);
+    this.physics.add.collider(ladiesnight, this.exit, this.destroyLadiesNightExit, null, this);
+    this.physics.add.collider(ladiesnight, this.player, this.collectLadiesNight, null, this);
+  }
+
+  // Create Woman
+  createWoman() {
+    this.womans = this.physics.add.group();
+
+    const numOfWomans = 15;
+
+    for (let i = 0; i < numOfWomans; i++) {
+      const xPosition = Phaser.Math.Between(50, this.sys.game.config.width - 50);
+      const yPosition = Phaser.Math.Between(100, 300);
+
+      const woman = this.womans.create(xPosition, yPosition, `woman`);
+      woman.setCollideWorldBounds(true);
+      woman.setBounce(0.8);
+      woman.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-50, 50));
+
+      this.physics.add.collider(woman, this.entrance, this.destroyWoman, null, this);
+      this.physics.add.collider(woman, this.exit, this.destroyWomanExit, null, this);
+      this.physics.add.collider(woman, this.player, this.collectWoman, null, this);
+    }
   }
 
   updateRepImage() {
@@ -188,6 +206,8 @@ class MainScene extends Phaser.Scene {
     }
   }
 
+  // Buttons -----------------------------------
+
   // Create Buttons
   createButtons() {
     const buttonStyle = {
@@ -211,7 +231,7 @@ class MainScene extends Phaser.Scene {
     this.pauseButton.setInteractive();
     this.pauseButton.on(`pointerdown`, this.pauseGame, this);
 
-    // Resume button (hidden initially)
+    // Resume button
     this.resumeButton = this.add.text(
       this.sys.game.config.width - 540,
       5,
@@ -255,7 +275,7 @@ class MainScene extends Phaser.Scene {
   }
 
 
-  // update -----------------------
+  // Update -----------------------------------
 
   update() {
     this.physics.world.wrap(this.drunks, 16);
@@ -270,7 +290,7 @@ class MainScene extends Phaser.Scene {
       this.physics.world.wrap(baby, 16, false, true, false, false);
     });
 
-    // Check for hitting the walls (including the entrance wall and exit wall)
+    // Check for hitting the walls
     this.physics.world.collide(this.drunks, this.entrance);
     this.physics.world.collide(this.babys, this.entrance);
     this.physics.world.collide(this.drunks, this.exit, this.destroyDrunkExit, null, this);
@@ -293,14 +313,13 @@ class MainScene extends Phaser.Scene {
     }
   }
 
-  // update -----------------------
-
-
   hit(player, sprite) {
     const angle = Phaser.Math.Angle.Between(player.x, player.y, sprite.x, sprite.y);
     const velocityMagnitude = 400;
     sprite.setVelocity(velocityMagnitude * Math.cos(angle), velocityMagnitude * Math.sin(angle));
   }
+
+  // Destroys -----------------------------------
 
   // Destroy drunk
   destroyDrunk(drunk, entrance) {
@@ -315,7 +334,8 @@ class MainScene extends Phaser.Scene {
   destroyDrunkExit(drunk, exit) {
     if (exit === this.exit) {
       drunk.destroy();
-      this.score -= 5;
+      this.score -= 25;
+      this.scoreText.setText(`Score: ` + this.score);
     }
   }
 
@@ -323,7 +343,7 @@ class MainScene extends Phaser.Scene {
   destroyBaby(baby, entrance) {
     if (entrance === this.entrance) {
       baby.destroy();
-      this.score -= 10;
+      this.score -= 50;
       this.scoreText.setText(`Score: ` + this.score);
 
       this.reputation--;
@@ -338,6 +358,74 @@ class MainScene extends Phaser.Scene {
   destroyBabyExit(baby, exit) {
     if (exit === this.exit) {
       baby.destroy();
+      this.score += 35;
+      this.scoreText.setText(`Score: ` + this.score);
+    }
+  }
+
+  // Destroy ladiesnight
+  destroyLadiesNight(ladiesnight, entrance) {
+    if (entrance === this.entrance) {
+      ladiesnight.destroy();
+      this.createWoman();
+
+      const flashDuration = 500;
+      const totalFlashDuration = 13000;
+      const flashColors = [
+        '#ff0000',
+        '#00ff00',
+        '#0000ff',
+        '#ff00ff',
+        '#ffff00',
+        '#00ffff',
+      ];
+
+      let currentIndex = 0;
+      let elapsedTime = 0;
+
+      const changeBackgroundColor = () => {
+        document.body.style.backgroundColor = flashColors[currentIndex];
+
+        currentIndex++;
+        if (currentIndex >= flashColors.length) {
+          currentIndex = 0;
+        }
+
+        elapsedTime += flashDuration;
+        if (elapsedTime >= totalFlashDuration) {
+          clearInterval(this.backgroundInterval);
+          document.body.style.backgroundColor = '';
+        }
+      };
+
+      this.backgroundInterval = setInterval(changeBackgroundColor, flashDuration);
+    }
+  }
+
+  // Destroy ladiesnight exit
+  destroyLadiesNightExit(ladiesnight, exit) {
+    if (exit === this.exit) {
+      ladiesnight.destroy();
+    }
+  }
+
+  // Destroy Woman
+  destroyWoman(woman, entrance) {
+    if (entrance === this.entrance) {
+      woman.destroy();
+      this.score += 500;
+      this.scoreText.setText(`Score: ` + this.score);
+      this.reputation++;
+      this.updateRepImage();
+    }
+  }
+
+  // Destroy Woman Exit
+  destroyWomanExit(woman, exit) {
+    if (exit === this.exit) {
+      woman.destroy();
+      this.score -= 50;
+      this.scoreText.setText(`Score: ` + this.score);
     }
   }
 
@@ -368,12 +456,12 @@ class MainScene extends Phaser.Scene {
 }
 
 let config = {
-  width: 800, // Width of the game in pixels
-  height: 500, // Height of the game in pixels
-  backgroundColor: `#3498db`, // The background color (blue)
-  scene: MainScene, // The name of the scene we created
-  physics: { default: `arcade` }, // The physics engine to use
-  parent: `game`, // Create the game inside the <div id="game">
+  width: 800,
+  height: 500,
+  backgroundColor: `#3498db`,
+  scene: MainScene,
+  physics: { default: `arcade` },
+  parent: `game`,
 };
 
 let game = new Phaser.Game(config);
