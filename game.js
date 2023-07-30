@@ -231,7 +231,7 @@ class MainScene extends Phaser.Scene {
     this.pauseButton.setInteractive();
     this.pauseButton.on(`pointerdown`, this.pauseGame, this);
 
-    // Resume button (hidden initially)
+    // Resume button
     this.resumeButton = this.add.text(
       this.sys.game.config.width - 540,
       5,
